@@ -2,13 +2,14 @@ package handler
 
 // PlatformID assignment from gitlab repository
 const (
-	mayaUI   = "6"
-	mayaIO   = "1"
-	MAYAID   = "7"
-	JIVAID   = "6"
-	ISTGTID  = "5"
-	ZFSID    = "8"
-	KONVOYID = "6"
+	// mayaUI   = "6"
+	// mayaIO   = "1"
+	// MAYAID   = "7"
+	// JIVAID   = "6"
+	// ISTGTID  = "5"
+	// ZFSID    = "8"
+	// KONVOYID = "6"
+	RANCHERID = "36"
 )
 
 // BranchName assignment from gitlab repository
@@ -100,7 +101,7 @@ type Jobssummary struct {
 	CreatedAt  string `json:"created_at"`
 	StartedAt  string `json:"started_at"`
 	FinishedAt string `json:"finished_at"`
-	JobLogURL  string `json:"job_log_url"`
+	// JobLogURL  string `json:"job_log_url"`
 }
 
 // TriggredID contains the details of a gitlab pipelines
@@ -114,18 +115,18 @@ type TriggredID struct {
 
 // pipelineSummary contains the details of a gitlab pipelines
 type pipelineSummary struct {
-	PipelineID  int           `json:"pipelineid"`
-	ProjectID   int           `json:"projectid"`
-	Sha         string        `json:"sha"`
-	Ref         string        `json:"ref"`
-	Status      string        `json:"status"`
-	WebURL      string        `json:"web_url"`
-	LogURL      string        `json:"kibana_url"`
-	AuthorName  string        `json:"author_name"`
-	AuthorEmail string        `json:"author_email"`
-	Message     string        `json:"message"`
-	Percentage  string        `json:"percentage_coverage"`
-	Jobs        []Jobssummary `json:"jobs"`
+	PipelineID int `json:"pipelineid"`
+	// ProjectID   int           `json:"projectid"`
+	Sha    string `json:"sha"`
+	Ref    string `json:"ref"`
+	Status string `json:"status"`
+	WebURL string `json:"web_url"`
+	// LogURL      string        `json:"kibana_url"`
+	// AuthorName  string        `json:"author_name"`
+	// AuthorEmail string        `json:"author_email"`
+	// Message     string        `json:"message"`
+	// Percentage  string        `json:"percentage_coverage"`
+	Jobs []Jobssummary `json:"jobs"`
 }
 
 type dashboard struct {

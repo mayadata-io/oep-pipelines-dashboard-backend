@@ -8,11 +8,11 @@ RUN mkdir /app
 
 RUN mkdir $GOPATH/src/github.com/mayadata-io
 
-RUN mkdir $GOPATH/src/github.com/mayadata-io/ci-e2e-status
+RUN mkdir $GOPATH/src/github.com/mayadata-io/oep-pipelines-dashboard-backend
 
-ADD . $GOPATH/src/github.com/mayadata-io/ci-e2e-status
+ADD . $GOPATH/src/github.com/mayadata-io/oep-pipelines-dashboard-backend
 
-WORKDIR $GOPATH/src/github.com/mayadata-io/ci-e2e-status
+WORKDIR $GOPATH/src/github.com/mayadata-io/oep-pipelines-dashboard-backend
 
 RUN go build -o /app/main .
 

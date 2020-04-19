@@ -1,6 +1,6 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/openebs/ci-e2e-status)](https://goreportcard.com/report/github.com/openebs/ci-e2e-status)
-[![Build status](https://img.shields.io/gitlab/pipeline/openebs/ci-e2e-status.svg?color=green&gitlab_url=https%3A%2F%2Fgitlab.openebs.ci&style=plastic)](https://gitlab.openebs.ci/openebs/ci-e2e-status/pipelines)
-[![BCH compliance](https://bettercodehub.com/edge/badge/openebs/ci-e2e-status?branch=master)](https://bettercodehub.com/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/openebs/oep-pipelines-dashboard-backend)](https://goreportcard.com/report/github.com/openebs/oep-pipelines-dashboard-backend)
+[![Build status](https://img.shields.io/gitlab/pipeline/openebs/oep-pipelines-dashboard-backend.svg?color=green&gitlab_url=https%3A%2F%2Fgitlab.openebs.ci&style=plastic)](https://gitlab.openebs.ci/openebs/oep-pipelines-dashboard-backend/pipelines)
+[![BCH compliance](https://bettercodehub.com/edge/badge/openebs/oep-pipelines-dashboard-backend?branch=master)](https://bettercodehub.com/)
 
 OpenEBS CI-E2E Status
 
