@@ -46,14 +46,14 @@ func InitDb() {
 
 // createTable in database if not abvailable
 func createTable() {
-	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipeline(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR);")
+	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipelines(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR);")
 	value, err := Db.Query(query)
 	if err != nil {
 		glog.Error(err)
 	}
 	defer value.Close()
 	// Create pipeline jobs table in database
-	query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipeline_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR);")
+	query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipelines_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR);")
 	value, err = Db.Query(query)
 	if err != nil {
 		glog.Error(err)
