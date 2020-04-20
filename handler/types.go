@@ -117,12 +117,12 @@ type TriggredID struct {
 type pipelineSummary struct {
 	PipelineID int `json:"pipelineid"`
 	// ProjectID   int           `json:"projectid"`
-	Sha    string `json:"sha"`
-	Ref    string `json:"ref"`
-	Status string `json:"status"`
-	WebURL string `json:"web_url"`
-	// LogURL      string        `json:"kibana_url"`
-	// AuthorName  string        `json:"author_name"`
+	Sha        string `json:"sha"`
+	Ref        string `json:"ref"`
+	Status     string `json:"status"`
+	WebURL     string `json:"web_url"`
+	ReleaseTag string `json:"release_tag"`
+	Coverage   string `json:"coverage"`
 	// AuthorEmail string        `json:"author_email"`
 	// Message     string        `json:"message"`
 	// Percentage  string        `json:"percentage_coverage"`
