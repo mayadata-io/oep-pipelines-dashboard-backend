@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang/glog"
@@ -14,6 +16,9 @@ import (
 
 // openshiftCommit from gitlab api and store to database
 func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
+	var releaseImageTag string
+	var percentageCoverage string
+
 	pipelineData, err := getPipelineData(token, project, branch)
 	if err != nil {
 		glog.Error(err)
@@ -25,9 +30,20 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			glog.Error(err)
 			return
 		}
+		releaseImageTag, err = getReleaseImageTag(pipelineJobsData, token)
+		if err != nil {
+			glog.Error(err)
+		}
+		percentageCoverage, err = percentageCoverageFunc(pipelineJobsData, token)
+		if err != nil {
+			glog.Error(err)
+			return
+		}
+
+		glog.Infoln("percentageCoverage", percentageCoverage)
 		glog.Infoln("pipelieID :->  " + strconv.Itoa(pipelineData[i].ID) + " || JobSLegth :-> " + strconv.Itoa(len(pipelineJobsData)))
-		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url) VALUES ($1, $2, $3, $4, $5)"+
-			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4 RETURNING pipelineid;", pipelineTable)
+		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage) VALUES ($1, $2, $3, $4, $5, $6, $7)"+
+			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7 RETURNING pipelineid;", pipelineTable)
 		id := 0
 		err = database.Db.QueryRow(sqlStatement,
 			pipelineData[i].ID,
@@ -35,6 +51,8 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			pipelineData[i].Ref,
 			pipelineData[i].Status,
 			pipelineData[i].WebURL,
+			releaseImageTag,
+			percentageCoverage,
 		).Scan(&id)
 		if err != nil {
 			glog.Error(err)
@@ -119,4 +137,89 @@ func getPipelineJobsData(pipelineID int, token string, project string) (Jobs, er
 		obj = append(obj, tmpObj...)
 	}
 	return obj, nil
+}
+func getReleaseImageTag(jobsData Jobs, token string) (string, error) {
+	var jobURL string
+	for _, value := range jobsData {
+		if value.Name == "director-deploy" {
+			jobURL = value.WebURL + "/raw"
+		}
+	}
+	req, err := http.NewRequest("GET", jobURL, nil)
+	if err != nil {
+		return "NA", err
+	}
+	req.Close = true
+	req.Header.Set("Connection", "close")
+	client := http.Client{
+		Timeout: time.Minute * time.Duration(1),
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return "NA", err
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	data := string(body)
+	if data == "" {
+		return "NA", err
+	}
+	re := regexp.MustCompile("release: [^ ]*")
+	value := re.FindString(data)
+	if value == "" {
+		return "NA", nil
+	}
+	result := strings.Split(string(value), ":")
+	if result != nil && len(result) != 0 {
+		if result[1] == "" {
+			return "NA", nil
+		}
+		s := result[1]
+		t := strings.Replace(s, "\n", "", -1)
+		return t, nil
+	}
+	return "NA", nil
+}
+
+func percentageCoverageFunc(jobsData Jobs, token string) (string, error) {
+	// var jobURL = "https://gitlab.mayadata.io/oep/oep-e2e-gcp/-/jobs/38871/raw"
+	var jobURL string
+	for _, value := range jobsData {
+		if value.Name == "e2e-metrics" {
+			jobURL = value.WebURL + "/raw"
+		}
+	}
+	if jobURL != "" {
+		req, err := http.NewRequest("GET", jobURL, nil)
+		if err != nil {
+			return "NA", err
+		}
+		req.Close = true
+		req.Header.Set("Connection", "close")
+		client := http.Client{
+			Timeout: time.Minute * time.Duration(1),
+		}
+		res, err := client.Do(req)
+		if err != nil {
+			return "NA", err
+		}
+		defer res.Body.Close()
+		body, _ := ioutil.ReadAll(res.Body)
+		data := string(body)
+		if data == "" {
+			return "NA", err
+		}
+		re := regexp.MustCompile("coverage: [^ ]*")
+		value := re.FindString(data)
+		result := strings.Split(string(value), ":")
+		if result != nil && len(result) > 1 {
+			if result[1] == "" {
+				return "NA", nil
+			}
+			releaseVersion := result[1]
+			return releaseVersion, nil
+		}
+		return "NA", nil
+	}
+	return "NA", nil
 }

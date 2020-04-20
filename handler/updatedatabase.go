@@ -15,7 +15,6 @@ func UpdateDatabase() {
 	if !ok {
 		glog.Fatalf("TOKEN environment variable required")
 	}
-	glog.Infoln("token-gitlab :----", token)
 	go getPlatformData(token, RANCHERID, "oep-release", "rancher_pipelines", "rancher_pipelines_jobs") //e2e-rancher
 	// Update the database, This wil run only first time
 	// loop will iterate at every 2nd minute and update the database
