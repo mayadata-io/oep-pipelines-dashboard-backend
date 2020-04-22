@@ -23,7 +23,8 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 			&pipelinedata.Status,
 			&pipelinedata.WebURL,
 			&pipelinedata.ReleaseTag,
-			&pipelinedata.Coverage,
+			&pipelinedata.Percentage,
+			&pipelinedata.Total,
 		)
 		if err != nil {
 			return err
