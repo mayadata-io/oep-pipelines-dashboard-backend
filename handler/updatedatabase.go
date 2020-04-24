@@ -20,8 +20,6 @@ func UpdateDatabase() {
 	// loop will iterate at every 2nd minute and update the database
 	tick := time.Tick(2 * time.Minute)
 	for range tick {
-		// commitData(token)
-		// pipelineData(token)
-
+		go getPlatformData(token, RANCHERID, "oep-release", "rancher_pipelines", "rancher_pipelines_jobs") //e2e-rancher
 	}
 }
