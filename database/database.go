@@ -46,19 +46,22 @@ func InitDb() {
 
 // createTable in database if not abvailable
 func createTable() {
-	query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipelines(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR, release_tag VARCHAR, coverage VARCHAR, total_coverage_count VARCHAR);")
-	value, err := Db.Query(query)
-	if err != nil {
-		glog.Error(err)
+	array := []string{"rancher", "aws", "konvoy"}
+	for _, platform := range array {
+		query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR, release_tag VARCHAR, coverage VARCHAR, total_coverage_count VARCHAR);")
+		value, err := Db.Query(query)
+		if err != nil {
+			glog.Error(err)
+		}
+		defer value.Close()
+		// Create pipeline jobs table in database
+		query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR);")
+		value, err = Db.Query(query)
+		if err != nil {
+			glog.Error(err)
+		}
+		defer value.Close()
 	}
-	defer value.Close()
-	// Create pipeline jobs table in database
-	query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS rancher_pipelines_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR);")
-	value, err = Db.Query(query)
-	if err != nil {
-		glog.Error(err)
-	}
-	defer value.Close()
 }
 
 // dbConfig get config from environment variable

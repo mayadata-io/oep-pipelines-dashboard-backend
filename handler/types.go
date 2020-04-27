@@ -2,14 +2,9 @@ package handler
 
 // PlatformID assignment from gitlab repository
 const (
-	// mayaUI   = "6"
-	// mayaIO   = "1"
-	// MAYAID   = "7"
-	// JIVAID   = "6"
-	// ISTGTID  = "5"
-	// ZFSID    = "8"
-	// KONVOYID = "6"
 	RANCHERID = "36"
+	KONVOYID  = "37"
+	AWSID     = "39"
 )
 
 // BranchName assignment from gitlab repository
