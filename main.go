@@ -16,10 +16,8 @@ func main() {
 	// Initailze Db connection
 	database.InitDb()
 	http.HandleFunc("/api/rancher", handler.RancherHandler)
-	// http.HandleFunc("/api/build", handler.PipelineHandler)
-	// http.HandleFunc("/api/pipelines/gcp", handler.OepPipelineHandler)
-	// http.HandleFunc("/api/pipelines/konvoy", handler.KonvoyPipelineHandler)
-	// http.HandleFunc("/api/pipelines/rancher", handler.RancherPipelineHandler)
+	http.HandleFunc("/api/aws", handler.AWSHandler)
+	http.HandleFunc("/api/konvoy", handler.KonvoyHandler)
 
 	// OepPipelineHandler
 	glog.Infof("Listening on http://0.0.0.0:3000")
