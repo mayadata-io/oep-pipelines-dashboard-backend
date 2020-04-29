@@ -141,9 +141,12 @@ func getPipelineJobsData(pipelineID int, token string, project string) (Jobs, er
 func getReleaseImageTag(jobsData Jobs, token string) (string, error) {
 	var jobURL string
 	for _, value := range jobsData {
-		if value.Name == "director-deploy" {
+		if strings.Contains(value.Name, "TCID-DIR-INSTALL") {
 			jobURL = value.WebURL + "/raw"
 		}
+	}
+	if jobURL == "" {
+		return "NA", nil
 	}
 	req, err := http.NewRequest("GET", jobURL, nil)
 	if err != nil {
