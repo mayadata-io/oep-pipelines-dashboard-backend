@@ -48,7 +48,7 @@ func InitDb() {
 func createTable() {
 	array := []string{"rancher", "aws", "konvoy"}
 	for _, platform := range array {
-		query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR, release_tag VARCHAR, coverage VARCHAR, total_coverage_count VARCHAR);")
+		query := fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines(pipelineid INT PRIMARY KEY, sha VARCHAR, ref VARCHAR, status VARCHAR, web_url VARCHAR, release_tag VARCHAR, coverage VARCHAR, total_coverage_count VARCHAR, valid_test_count VARCHAR);")
 		value, err := Db.Query(query)
 		if err != nil {
 			glog.Error(err)
