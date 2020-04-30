@@ -16,7 +16,7 @@ import (
 
 // openshiftCommit from gitlab api and store to database
 func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
-	var releaseImageTag, percentageCoverage, totalTestCoverage string
+	var releaseImageTag, percentageCoverage, totalTestCoverage, validTestCount string
 	// var percentageCoverage string
 
 	pipelineData, err := getPipelineData(token, project, branch)
@@ -34,15 +34,15 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 		if err != nil {
 			glog.Error(err)
 		}
-		percentageCoverage, totalTestCoverage, err = percentageCoverageFunc(pipelineJobsData, token)
+		percentageCoverage, totalTestCoverage, validTestCount, err = percentageCoverageFunc(pipelineJobsData, token)
 		if err != nil {
 			glog.Error(err)
 			return
 		}
-		glog.Infoln("Total: : : - ", percentageCoverage+" : : - Percentage : : - "+totalTestCoverage)
+		glog.Infoln("pipeline :- "+strconv.Itoa(pipelineData[i].ID)+" \n Total Coverage :- ", totalTestCoverage+" : Percentage :- "+percentageCoverage+" validTestCount:- "+validTestCount)
 		glog.Infoln("pipelieID :->  " + strconv.Itoa(pipelineData[i].ID) + " || JobSLegth :-> " + strconv.Itoa(len(pipelineJobsData)))
-		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"+
-			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8 RETURNING pipelineid;", pipelineTable)
+		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count, valid_test_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"+
+			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8, valid_test_count = $9 RETURNING pipelineid;", pipelineTable)
 		id := 0
 		err = database.Db.QueryRow(sqlStatement,
 			pipelineData[i].ID,
@@ -53,6 +53,7 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			releaseImageTag,
 			percentageCoverage,
 			totalTestCoverage,
+			validTestCount,
 		).Scan(&id)
 		if err != nil {
 			glog.Error(err)
@@ -184,7 +185,7 @@ func getReleaseImageTag(jobsData Jobs, token string) (string, error) {
 	return "NA", nil
 }
 
-func percentageCoverageFunc(jobsData Jobs, token string) (string, string, error) {
+func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string, error) {
 	// var jobURL = "https://gitlab.mayadata.io/oep/oep-e2e-gcp/-/jobs/38871/raw"
 	var jobURL string
 	for _, value := range jobsData {
@@ -195,7 +196,7 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, error)
 	if jobURL != "" {
 		req, err := http.NewRequest("GET", jobURL, nil)
 		if err != nil {
-			return "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		req.Close = true
 		req.Header.Set("Connection", "close")
@@ -204,19 +205,30 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, error)
 		}
 		res, err := client.Do(req)
 		if err != nil {
-			return "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		defer res.Body.Close()
 		body, _ := ioutil.ReadAll(res.Body)
 		data := string(body)
 		if data == "" {
-			return "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		re := regexp.MustCompile("coverage: [^ ]*")
 		value := re.FindString(data)
 		totalCount := regexp.MustCompile("count: [^ ]*")
 		totalValue := totalCount.FindString(data)
-		var totalAutomatedTests, coveragePercentage string
+		validTestsRegex := regexp.MustCompile("\\WvalidTestCount: [^ ]*")
+		validTestCountValue := validTestsRegex.FindString(data)
+		var totalAutomatedTests, coveragePercentage, validTestCount string
+		if validTestCountValue != "" {
+			validTestCountString := strings.Split(string(validTestCountValue), ":")
+			if len(validTestCountString) != 0 {
+				splitValidCount := strings.Split(validTestCountString[1], "\n")
+				validTestCount = splitValidCount[0]
+			} else {
+				validTestCount = "NA"
+			}
+		}
 		if totalValue != "" {
 			splitCountString := strings.Split(string(totalValue), ":")
 			if len(splitCountString) != 0 {
@@ -234,7 +246,7 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, error)
 				coveragePercentage = "NA"
 			}
 		}
-		return coveragePercentage, totalAutomatedTests, nil
+		return coveragePercentage, totalAutomatedTests, validTestCount, nil
 	}
-	return "NA", "NA", nil
+	return "NA", "NA", "NA", nil
 }

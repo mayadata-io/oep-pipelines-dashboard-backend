@@ -25,6 +25,7 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 			&pipelinedata.ReleaseTag,
 			&pipelinedata.Percentage,
 			&pipelinedata.Total,
+			&pipelinedata.ValidTestCount,
 		)
 		if err != nil {
 			return err
