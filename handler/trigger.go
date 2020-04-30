@@ -196,7 +196,7 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string
 	if jobURL != "" {
 		req, err := http.NewRequest("GET", jobURL, nil)
 		if err != nil {
-			return "", "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		req.Close = true
 		req.Header.Set("Connection", "close")
@@ -205,13 +205,13 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string
 		}
 		res, err := client.Do(req)
 		if err != nil {
-			return "", "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		defer res.Body.Close()
 		body, _ := ioutil.ReadAll(res.Body)
 		data := string(body)
 		if data == "" {
-			return "", "NA", "NA", err
+			return "NA", "NA", "NA", err
 		}
 		re := regexp.MustCompile("coverage: [^ ]*")
 		value := re.FindString(data)
@@ -248,5 +248,5 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string
 		}
 		return coveragePercentage, totalAutomatedTests, validTestCount, nil
 	}
-	return "", "NA", "NA", nil
+	return "NA", "NA", "NA", nil
 }
