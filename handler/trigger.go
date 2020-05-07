@@ -16,7 +16,7 @@ import (
 
 // openshiftCommit from gitlab api and store to database
 func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
-	var releaseImageTag, percentageCoverage, totalTestCoverage, validTestCount string
+	var releaseImageTag, percentageCoverage, totalTestCoverage, validTestCount, kubernetesVersion string
 	// var percentageCoverage string
 
 	pipelineData, err := getPipelineData(token, project, branch)
@@ -39,10 +39,14 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			glog.Error(err)
 			return
 		}
+		kubernetesVersion, err = getKubernetesVersion(pipelineJobsData, token)
+		if err != nil {
+			glog.Error(err)
+			return
+		}
 		glog.Infoln("pipeline :- "+strconv.Itoa(pipelineData[i].ID)+" \n Total Coverage :- ", totalTestCoverage+" : Percentage :- "+percentageCoverage+" validTestCount:- "+validTestCount)
-		glog.Infoln("pipelieID :->  " + strconv.Itoa(pipelineData[i].ID) + " || JobSLegth :-> " + strconv.Itoa(len(pipelineJobsData)))
-		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count, valid_test_count) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"+
-			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8, valid_test_count = $9 RETURNING pipelineid;", pipelineTable)
+		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count, valid_test_count, kubernetes_version) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"+
+			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8, valid_test_count = $9, kubernetes_version = $10 RETURNING pipelineid;", pipelineTable)
 		id := 0
 		err = database.Db.QueryRow(sqlStatement,
 			pipelineData[i].ID,
@@ -54,6 +58,7 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			percentageCoverage,
 			totalTestCoverage,
 			validTestCount,
+			kubernetesVersion,
 		).Scan(&id)
 		if err != nil {
 			glog.Error(err)
@@ -249,4 +254,51 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string
 		return coveragePercentage, totalAutomatedTests, validTestCount, nil
 	}
 	return "NA", "NA", "NA", nil
+}
+
+func getKubernetesVersion(jobsData Jobs, token string) (string, error) {
+	var jobURL string
+	for _, value := range jobsData {
+		if value.Name == "cluster-create" {
+			jobURL = value.WebURL + "/raw"
+		}
+	}
+	if jobURL == "" {
+		return "NA", nil
+	}
+	req, err := http.NewRequest("GET", jobURL, nil)
+	if err != nil {
+		return "NA", err
+	}
+	req.Close = true
+	req.Header.Set("Connection", "close")
+	client := http.Client{
+		Timeout: time.Minute * time.Duration(1),
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return "NA", err
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	data := string(body)
+	if data == "" {
+		return "NA", err
+	}
+	re := regexp.MustCompile("KubernetesVersion: [^ ]*")
+	value := re.FindString(data)
+	if value == "" {
+		return "NA", nil
+	}
+	result := strings.Split(string(value), ":")
+	if result != nil && len(result) != 0 {
+		if result[1] == "" {
+			return "NA", nil
+		}
+		s := result[1]
+		t := strings.Replace(s, "\n", "", -1)
+		rmS := strings.Replace(t, "*", "", -1)
+		return rmS, nil
+	}
+	return "NA", nil
 }

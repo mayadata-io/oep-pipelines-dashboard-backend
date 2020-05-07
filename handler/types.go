@@ -112,15 +112,16 @@ type TriggredID struct {
 type pipelineSummary struct {
 	PipelineID int `json:"pipelineid"`
 	// ProjectID   int           `json:"projectid"`
-	Sha            string        `json:"sha"`
-	Ref            string        `json:"ref"`
-	Status         string        `json:"status"`
-	WebURL         string        `json:"web_url"`
-	ReleaseTag     string        `json:"release_tag"`
-	Percentage     string        `json:"coverage"`
-	Total          string        `json:"total_coverage_count"`
-	ValidTestCount string        `json:"valid_test_count"`
-	Jobs           []Jobssummary `json:"jobs"`
+	Sha               string        `json:"sha"`
+	Ref               string        `json:"ref"`
+	Status            string        `json:"status"`
+	WebURL            string        `json:"web_url"`
+	ReleaseTag        string        `json:"release_tag"`
+	Percentage        string        `json:"coverage"`
+	Total             string        `json:"total_coverage_count"`
+	ValidTestCount    string        `json:"valid_test_count"`
+	KubernetesVersion string        `json:"kubernetes_version"`
+	Jobs              []Jobssummary `json:"jobs"`
 }
 type dashboard struct {
 	Dashboard []pipelineSummary `json:"dashboard"`
