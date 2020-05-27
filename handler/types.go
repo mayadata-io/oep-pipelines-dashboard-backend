@@ -87,15 +87,16 @@ type Jobs []struct {
 
 // Jobssummary struct
 type Jobssummary struct {
-	PipelineID int    `json:"pipelineid"`
-	ID         int    `json:"id"`
-	Status     string `json:"status"`
-	Stage      string `json:"stage"`
-	Name       string `json:"name"`
-	Ref        string `json:"ref"`
-	CreatedAt  string `json:"created_at"`
-	StartedAt  string `json:"started_at"`
-	FinishedAt string `json:"finished_at"`
+	PipelineID  int    `json:"pipelineid"`
+	ID          int    `json:"id"`
+	Status      string `json:"status"`
+	Stage       string `json:"stage"`
+	Name        string `json:"name"`
+	Ref         string `json:"ref"`
+	CreatedAt   string `json:"created_at"`
+	StartedAt   string `json:"started_at"`
+	FinishedAt  string `json:"finished_at"`
+	TestCaseURL string `json:"test_case_URL"`
 	// JobLogURL  string `json:"job_log_url"`
 }
 

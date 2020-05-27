@@ -31,7 +31,7 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 		if err != nil {
 			return err
 		}
-		jobsquery := fmt.Sprintf("SELECT pipelineid, id, status , stage , name , ref , created_at , started_at , finished_at  FROM %s WHERE pipelineid = $1 ORDER BY id;", jobsTable)
+		jobsquery := fmt.Sprintf("SELECT pipelineid, id, status , stage , name , ref , created_at , started_at , finished_at , test_case_URL  FROM %s WHERE pipelineid = $1 ORDER BY id;", jobsTable)
 		jobsrows, err := database.Db.Query(jobsquery, pipelinedata.PipelineID)
 		if err != nil {
 			return err
@@ -50,6 +50,7 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 				&jobsdata.CreatedAt,
 				&jobsdata.StartedAt,
 				&jobsdata.FinishedAt,
+				&jobsdata.TestCaseURL,
 			)
 			if err != nil {
 				return err

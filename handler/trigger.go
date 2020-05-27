@@ -67,8 +67,13 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 
 		// Add pipeline jobs data to Database
 		for j := range pipelineJobsData {
-			sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, id, status, stage, name, ref, created_at, started_at, finished_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)"+
-				"ON CONFLICT (id) DO UPDATE SET status = $3, stage = $4, name = $5, ref = $6, created_at = $7, started_at = $8, finished_at = $9 RETURNING id;", jobTable)
+			getTestCaseURL, err := getTestCaseURL(pipelineJobsData[j].WebURL, token)
+			if err != nil {
+				glog.Error(err)
+				return
+			}
+			sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, id, status, stage, name, ref, created_at, started_at, finished_at, test_case_URL) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"+
+				"ON CONFLICT (id) DO UPDATE SET status = $3, stage = $4, name = $5, ref = $6, created_at = $7, started_at = $8, finished_at = $9, test_case_URL = $10 RETURNING id;", jobTable)
 			id := 0
 			err = database.Db.QueryRow(sqlStatement,
 				pipelineData[i].ID,
@@ -80,6 +85,7 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 				pipelineJobsData[j].CreatedAt,
 				pipelineJobsData[j].StartedAt,
 				pipelineJobsData[j].FinishedAt,
+				getTestCaseURL,
 			).Scan(&id)
 			if err != nil {
 				glog.Error(err)
@@ -291,6 +297,47 @@ func getKubernetesVersion(jobsData Jobs, token string) (string, error) {
 		return "NA", nil
 	}
 	result := strings.Split(string(value), ":")
+	if result != nil && len(result) != 0 {
+		if result[1] == "" {
+			return "NA", nil
+		}
+		s := result[1]
+		t := strings.Replace(s, "\n", "", -1)
+		rmS := strings.Replace(t, "*", "", -1)
+		return rmS, nil
+	}
+	return "NA", nil
+}
+
+func getTestCaseURL(jobURL string, token string) (string, error) {
+	if jobURL == "" {
+		return "NA", nil
+	}
+	req, err := http.NewRequest("GET", jobURL+"/raw", nil)
+	if err != nil {
+		return "NA", err
+	}
+	req.Close = true
+	req.Header.Set("Connection", "close")
+	client := http.Client{
+		Timeout: time.Minute * time.Duration(1),
+	}
+	res, err := client.Do(req)
+	if err != nil {
+		return "NA", err
+	}
+	defer res.Body.Close()
+	body, _ := ioutil.ReadAll(res.Body)
+	data := string(body)
+	if data == "" {
+		return "NA", err
+	}
+	re := regexp.MustCompile("TC_E2E_PLAN_LINK: [^ ]*\n")
+	value := re.FindString(data)
+	if value == "" {
+		return "NA", nil
+	}
+	result := strings.Split(string(value), ": ")
 	if result != nil && len(result) != 0 {
 		if result[1] == "" {
 			return "NA", nil
