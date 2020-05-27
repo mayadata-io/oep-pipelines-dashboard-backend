@@ -55,7 +55,7 @@ func createTable() {
 		}
 		defer value.Close()
 		// Create pipeline jobs table in database
-		query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR);")
+		query = fmt.Sprintf("CREATE TABLE IF NOT EXISTS " + platform + "_pipelines_jobs(pipelineid INT, id INT PRIMARY KEY,status VARCHAR, stage VARCHAR, name VARCHAR, ref VARCHAR, created_at VARCHAR, started_at VARCHAR, finished_at VARCHAR, test_case_URL VARCHAR);")
 		value, err = Db.Query(query)
 		if err != nil {
 			glog.Error(err)
