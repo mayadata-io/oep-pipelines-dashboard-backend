@@ -332,7 +332,7 @@ func getTestCaseURL(jobURL string, token string) (string, error) {
 	if data == "" {
 		return "NA", err
 	}
-	re := regexp.MustCompile("TC_E2E_PLAN_LINK: [^ ]*\n")
+	re := regexp.MustCompile("\nTC_E2E_PLAN_LINK: [^ ]*\n")
 	value := re.FindString(data)
 	if value == "" {
 		return "NA", nil
