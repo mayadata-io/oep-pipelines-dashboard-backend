@@ -36,12 +36,13 @@ type PlatformPipeline struct {
 
 // Pipeline struct
 type Pipeline []struct {
-	ID     int    `json:"id"`
-	Sha    string `json:"sha"`
-	Ref    string `json:"ref"`
-	Status string `json:"status"`
-	WebURL string `json:"web_url"`
-	Jobs   Jobs   `json:"jobs"`
+	ID        int    `json:"id"`
+	Sha       string `json:"sha"`
+	Ref       string `json:"ref"`
+	Status    string `json:"status"`
+	WebURL    string `json:"web_url"`
+	CreatedAt string `json:"created_at"`
+	Jobs      Jobs   `json:"jobs"`
 }
 
 // Commit  dsdsdss
@@ -122,6 +123,7 @@ type pipelineSummary struct {
 	Total             string        `json:"total_coverage_count"`
 	ValidTestCount    string        `json:"valid_test_count"`
 	KubernetesVersion string        `json:"kubernetes_version"`
+	CreatedAt         string        `json:"created_at"`
 	Jobs              []Jobssummary `json:"jobs"`
 }
 type dashboard struct {
@@ -181,4 +183,15 @@ type BuildpipelineSummary struct {
 // Builddashboard contains the details related to builds
 type Builddashboard struct {
 	Dashboard []BuildpipelineSummary `json:"dashboard"`
+}
+
+// PostDailyMetrics contains the details of postData
+type PostDailyMetrics struct {
+	PipelineID string `json:"pipelineid"`
+	Date       string `json:"created_at"`
+}
+
+// MetricDashboard contains the details of postData
+type MetricDashboard struct {
+	Dashboard []PostDailyMetrics `json:"dashboard"`
 }

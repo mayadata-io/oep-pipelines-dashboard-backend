@@ -18,6 +18,8 @@ func main() {
 	http.HandleFunc("/api/rancher", handler.RancherHandler)
 	http.HandleFunc("/api/aws", handler.AWSHandler)
 	http.HandleFunc("/api/konvoy", handler.KonvoyHandler)
+	// postReq endpoints
+	http.HandleFunc("/api/metrics/", handler.MetricsDailyPipelines)
 
 	// OepPipelineHandler
 	glog.Infof("Listening on http://0.0.0.0:3000")

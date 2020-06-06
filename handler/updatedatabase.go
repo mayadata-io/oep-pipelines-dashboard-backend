@@ -13,7 +13,7 @@ func UpdateDatabase() {
 	// Read token environment variable
 	token, ok := os.LookupEnv(token)
 	if !ok {
-		glog.Fatalf("TOKEN environment variable required")
+		glog.Fatalf("TOKEN environment variable required", token)
 	}
 	go getPlatformData(token, RANCHERID, "oep-release", "rancher_pipelines", "rancher_pipelines_jobs") //e2e-rancher
 	go getPlatformData(token, AWSID, "oep-release", "aws_pipelines", "aws_pipelines_jobs")             //e2e-aws

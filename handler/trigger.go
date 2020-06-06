@@ -45,8 +45,8 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			return
 		}
 		glog.Infoln("pipeline :- "+strconv.Itoa(pipelineData[i].ID)+" \n Total Coverage :- ", totalTestCoverage+" : Percentage :- "+percentageCoverage+" validTestCount:- "+validTestCount)
-		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count, valid_test_count, kubernetes_version) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)"+
-			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8, valid_test_count = $9, kubernetes_version = $10 RETURNING pipelineid;", pipelineTable)
+		sqlStatement := fmt.Sprintf("INSERT INTO %s (pipelineid, sha, ref, status, web_url, release_tag, coverage, total_coverage_count, valid_test_count, kubernetes_version, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)"+
+			"ON CONFLICT (pipelineid) DO UPDATE SET status = $4, release_tag = $6, coverage = $7, total_coverage_count = $8, valid_test_count = $9, kubernetes_version = $10, created_at = $11 RETURNING pipelineid;", pipelineTable)
 		id := 0
 		err = database.Db.QueryRow(sqlStatement,
 			pipelineData[i].ID,
@@ -59,6 +59,7 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			totalTestCoverage,
 			validTestCount,
 			kubernetesVersion,
+			pipelineJobsData[0].CreatedAt,
 		).Scan(&id)
 		if err != nil {
 			glog.Error(err)
