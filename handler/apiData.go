@@ -27,6 +27,7 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 			&pipelinedata.Total,
 			&pipelinedata.ValidTestCount,
 			&pipelinedata.KubernetesVersion,
+			&pipelinedata.CreatedAt,
 		)
 		if err != nil {
 			return err
