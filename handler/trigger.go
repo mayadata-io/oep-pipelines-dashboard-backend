@@ -44,7 +44,7 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			glog.Error(err)
 			return
 		}
-		if pipelineData[i].Status == "success" || pipelineData[i].Status != "failed" || pipelineData[i].Status != "skipped" {
+		if pipelineData[i].Status == "success" || pipelineData[i].Status == "failed" {
 			createdAt = pipelineJobsData[0].CreatedAt
 		} else {
 			createdAt = "NA"
