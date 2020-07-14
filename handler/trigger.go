@@ -45,7 +45,11 @@ func getPlatformData(token, project, branch, pipelineTable, jobTable string) {
 			return
 		}
 		if pipelineData[i].Status == "success" || pipelineData[i].Status == "failed" {
-			createdAt = pipelineJobsData[0].CreatedAt
+			if len(pipelineJobsData) != 0 {
+				createdAt = pipelineJobsData[0].CreatedAt
+			} else {
+				createdAt = "NA"
+			}
 		} else {
 			createdAt = "NA"
 		}
