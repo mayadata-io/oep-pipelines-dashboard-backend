@@ -1,6 +1,6 @@
-[![Go Report Card](https://goreportcard.com/badge/github.com/openebs/oep-pipelines-dashboard-backend)](https://goreportcard.com/report/github.com/openebs/oep-pipelines-dashboard-backend)
-[![Build status](https://img.shields.io/gitlab/pipeline/openebs/oep-pipelines-dashboard-backend.svg?color=green&gitlab_url=https%3A%2F%2Fgitlab.openebs.ci&style=plastic)](https://gitlab.openebs.ci/openebs/oep-pipelines-dashboard-backend/pipelines)
-[![BCH compliance](https://bettercodehub.com/edge/badge/openebs/oep-pipelines-dashboard-backend?branch=master)](https://bettercodehub.com/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mayadata-io/oep-pipelines-dashboard-backend)](https://goreportcard.com/report/github.com/mayadata-io/oep-pipelines-dashboard-backend)
+#[![Build status](https://img.shields.io/gitlab/pipeline/mayadata-io/oep-pipelines-dashboard-backend.svg?color=green&gitlab_url=https%3A%2F%2Fgitlab.openebs.ci&style=plastic)](https://gitlab.openebs.ci/openebs/oep-pipelines-dashboard-backend/pipelines)
+#[![BCH compliance](https://bettercodehub.com/edge/badge/openebs/oep-pipelines-dashboard-backend?branch=master)](https://bettercodehub.com/)
 
 OpenEBS CI-E2E Status
 
