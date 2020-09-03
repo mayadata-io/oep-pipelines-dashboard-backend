@@ -194,6 +194,10 @@ func getReleaseImageTag(jobsData Jobs, token string) (string, error) {
 	if value == "" {
 		return "NA", nil
 	}
+	if strings.Contains(value, "\n") {
+		dat := strings.SplitN(value, "\n", 2)
+		value = dat[0]
+	}
 	result := strings.Split(string(value), ":")
 	if result != nil && len(result) != 0 {
 		if result[1] == "" {
