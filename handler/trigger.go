@@ -238,11 +238,11 @@ func percentageCoverageFunc(jobsData Jobs, token string) (string, string, string
 		if data == "" {
 			return "NA", "NA", "NA", err
 		}
-		re := regexp.MustCompile("coverage: [^ ]*")
+		re := regexp.MustCompile(" coverage: [^ ]*")
 		value := re.FindString(data)
-		totalCount := regexp.MustCompile("count: [^ ]*")
+		totalCount := regexp.MustCompile(" count: [^ ]*")
 		totalValue := totalCount.FindString(data)
-		validTestsRegex := regexp.MustCompile("\\WvalidTestCount: [^ ]*")
+		validTestsRegex := regexp.MustCompile("\\W validTestCount: [^ ]*")
 		validTestCountValue := validTestsRegex.FindString(data)
 		var totalAutomatedTests, coveragePercentage, validTestCount string
 		if validTestCountValue != "" {
