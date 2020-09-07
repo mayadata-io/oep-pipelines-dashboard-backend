@@ -2,17 +2,29 @@ package handler
 
 import (
 	"fmt"
+	"strconv"
+
+	"github.com/golang/glog"
 
 	"github.com/mayadata-io/oep-pipelines-dashboard-backend/database"
 )
 
 // QueryData fetches the builddashboard data from the db
-func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
-	pipelineQuery := fmt.Sprintf("SELECT * FROM %s ORDER BY pipelineid DESC LIMIT 20;", pipelineTable)
+func QueryData(datas *dashboard, pipelineTable string, jobsTable string, page string) error {
+	pageno, err := strconv.Atoi(page)
+	if err != nil {
+		glog.Infof("given page number is not a interger , %s replace this string with a number", page)
+	}
+	pipelineQuery := fmt.Sprintf("SELECT * FROM %s ORDER BY pipelineid DESC LIMIT 20 OFFSET %d;", pipelineTable, pageno*20)
+	countQuery := fmt.Sprintf("SELECT count(*) FROM %s ;", pipelineTable)
 	pipelinerows, err := database.Db.Query(pipelineQuery)
+
 	if err != nil {
 		return err
 	}
+	var counter int
+	database.Db.QueryRow(countQuery).Scan(&counter)
+
 	defer pipelinerows.Close()
 	for pipelinerows.Next() {
 		pipelinedata := pipelineSummary{}
@@ -60,6 +72,7 @@ func QueryData(datas *dashboard, pipelineTable string, jobsTable string) error {
 			pipelinedata.Jobs = jobsdataarray
 		}
 		datas.Dashboard = append(datas.Dashboard, pipelinedata)
+		datas.PipelineCount = counter
 	}
 	err = pipelinerows.Err()
 	if err != nil {

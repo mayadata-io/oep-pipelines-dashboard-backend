@@ -11,8 +11,9 @@ import (
 func RancherHandler(w http.ResponseWriter, r *http.Request) {
 	// Allow cross origin request
 	(w).Header().Set("Access-Control-Allow-Origin", "*")
+	pageNo := getparams(r, "page")
 	datas := dashboard{}
-	err := QueryData(&datas, "rancher_pipelines", "rancher_pipelines_jobs")
+	err := QueryData(&datas, "rancher_pipelines", "rancher_pipelines_jobs", pageNo)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
 		glog.Error(err)
