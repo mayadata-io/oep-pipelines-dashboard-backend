@@ -127,7 +127,8 @@ type pipelineSummary struct {
 	Jobs              []Jobssummary `json:"jobs"`
 }
 type dashboard struct {
-	Dashboard []pipelineSummary `json:"dashboard"`
+	Dashboard     []pipelineSummary `json:"dashboard"`
+	PipelineCount int               `json:"pipelineCount"`
 }
 
 // BuildJobs struct
